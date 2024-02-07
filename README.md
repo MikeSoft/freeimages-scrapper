@@ -1,9 +1,75 @@
+## Questions:
 
+**How can we automate the login of the page?**  
+Using the requests library and sessions to store the cookies and the csrf token, we can automate the login of the page.
+
+**How can we scale the extractor to get thousands of pages per hour?**  
+We can use a distributed system to scrape the images, using a queue system like celery, and a distributed system like
+kubernetes to scale the system.
+
+## Tech Stack
+
+```
+Python 3.8.5  (https://www.python.org/)
+Django 4.2.7 (https://www.djangoproject.com/)
+Docker 20.10.8 (https://www.docker.com/)
+Docker-compose 1.29.2 (https://docs.docker.com/compose/)
+Mysql 8.0.26 (https://www.mysql.com/)
+```
+
+## How to run the project
+
+- Deploy with Docker
+
+I've created a make file to manage the differents aspects of the application, with only one command, you can create the
+virtual environment, install the dependencies, run the migrations, run the server in docker.
+With only one comand you can run the project
+
+```shell
+make buildandrun
+```
+
+### Create user for admin dashboard
+
+```shell
+make createadmin
+```
+
+the console will ask you a password
+with the password you can go to the admin dashboard with [this link](http://localhost/admin)
+
+user=```admin```  
+password=```the password that you set in the console```
+
+# How to Scrape the images
+
+go to http://localhost/admin/images/search/  
+![screenshot](./documentation/images/admin_search.png)
+and click on "Add search" button, and fill the form with the search that you want to scrape.   
+The system automatically will scrape the images and save it in the database.  
+It uses a celery task to scrape the images.
+now go to http://localhost/admin/images/image/ to see the images that you have scraped.
+![screenshot](./documentation/images/admin_images.png)  
+if you click on the image title, you can see the image detail. i also added the tags that the image has.
+
+```bash
+
+
+---
+# How registered a user:
+
+when i was going to test how to log in a user, i found that the login form is not working, so i decided to create a user
+debbuging the form and the request that the form is sending to the server.
 
 ```bash
 user=donaldtrump123
 pass=sejawat716
 ```
+
+![screenshot](./documentation/images/free_images_login_fail.png)  
+![screenshot](./documentation/images/free_images_login_fail_message.png)
+**i used postman to solved it**
+![screenshot](./documentation/images/fix_errr_request.png)
 
 ```bash
 ```json
@@ -13,6 +79,7 @@ pass=sejawat716
 }
 ```
 
+![screenshot](./documentation/images/loggued.png)
 
 ```bash
 curl --location 'https://www.freeimages.com/ajax/user/signup' \
@@ -38,3 +105,18 @@ curl --location 'https://www.freeimages.com/ajax/user/signup' \
 --form 'password="sejawat716"' \
 --form 'password_confirmation="sejawat716"'
 ```
+
+## Future Improvements
+
+- Create and setting file for each environment ( unique configuration )
+- Add a logger
+- Add a cache layer
+- Authentication and Authorization layer
+- AWS deployment
+- Add a CI/CD pipeline
+- Add a monitoring tool
+- Add a metrics tool
+- Add a security tool
+- Add a code quality tool
+- Add a code coverage tool
+-
