@@ -31,10 +31,8 @@ class ImageTag(models.Model):
     class Meta:
         verbose_name = "Image Tag"
         verbose_name_plural = "Image Tags"
-        unique_together = ('image', 'tag')
-        indexes = [
-            models.Index(fields=['image', 'tag'])
-        ]
+        unique_together = ("image", "tag")
+        indexes = [models.Index(fields=["image", "tag"])]
 
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)

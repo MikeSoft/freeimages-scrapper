@@ -9,10 +9,16 @@ class FreeImagesService:
     def __init__(self):
         self.base_url = "https://www.freeimages.com/search/{query}/{page}"
         self.base_div = "grid-container"
-        self.avoid_image_list = ["https://static.freeimages.com/assets/icons/istock_logo.svg", ]
+        self.avoid_image_list = [
+            "https://static.freeimages.com/assets/icons/istock_logo.svg",
+        ]
         self.tags_tag = "tags-container"
 
-    def search(self, query, page, ):
+    def search(
+        self,
+        query,
+        page,
+    ):
         url = self.base_url.format(query=query, page=page)
         response = requests.get(url)
         soup = bs.BeautifulSoup(response.text, "html.parser")
@@ -24,12 +30,13 @@ class FreeImagesService:
             src = img.get("src")
             if not src.startswith("data:image") and src not in self.avoid_image_list:
                 src = src.split("?")[0]
-                tags = [tag.text.strip() for tag in article.find("div", {"class": "tags-container"}).find_all("a")]
-                data = {
-                    "title": img.get("alt"),
-                    "url": src,
-                    "tags": tags
-                }
+                tags = [
+                    tag.text.strip()
+                    for tag in article.find(
+                        "div", {"class": "tags-container"}
+                    ).find_all("a")
+                ]
+                data = {"title": img.get("alt"), "url": src, "tags": tags}
                 images.append(data)
 
         return images

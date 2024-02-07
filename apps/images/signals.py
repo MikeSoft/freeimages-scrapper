@@ -11,4 +11,6 @@ def start_scrapping(sender, instance, created, **kwargs):
     if created:
         logging.info(f"start_scrapping({instance.query})")
         print(f"start_scrapping({instance.query})")
-        get_photos_service.command.delay(search_text=instance.query, max_results=instance.max_results)
+        get_photos_service.command.delay(
+            search_text=instance.query, max_results=instance.max_results
+        )

@@ -50,8 +50,8 @@ services:
     environment:
       DEBUG: 'true'
     command: >
-      sh -c "python manage.py collectstatic --settings=freeimagesscrapper.settings --noinput &&
-             python manage.py migrate --settings=freeimagesscrapper.settings &&
+      sh -c "python manage.py collectstatic --settings=freeimagesscrapper.settings_docker --noinput &&
+             python manage.py migrate --settings=freeimagesscrapper.settings_docker &&
              /usr/local/bin/gunicorn freeimagesscrapper.wsgi:application  -w 2 -b :8000"
     depends_on:
       - db
