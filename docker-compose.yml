@@ -1,0 +1,79 @@
+version: '3.7'
+
+services:
+  db:
+    image: mysql:8.2.0
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+    env_file:
+      - docker/mysql/mysql.env
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+
+  nginx:
+    restart: always
+    build: docker/nginx
+    ports:
+      - "80:80"
+    links:
+      - web:web
+    depends_on:
+      - web
+    volumes:
+      - web-django:/app
+
+  redis:
+    image: redis:6.2.14
+    ports:
+      - "6379:6379"
+
+  web:
+    restart: always
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    expose:
+      - "8000"
+    links:
+      - db:db
+      - redis:redis
+    volumes:
+      - web-django:/app
+    env_file:
+      - docker/web/env.env
+      - docker/mysql/mysql.env
+    environment:
+      DEBUG: 'true'
+    command: >
+      sh -c "python manage.py collectstatic --settings=freeimagesscrapper.settings --noinput &&
+             python manage.py migrate --settings=freeimagesscrapper.settings &&
+             /usr/local/bin/gunicorn freeimagesscrapper.wsgi:application  -w 2 -b :8000"
+    depends_on:
+      - db
+      - redis
+  celery:
+    restart: always
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    command: celery -A freeimagesscrapper worker -l INFO
+    volumes:
+      - web-django:/app
+    env_file:
+      - docker/web/env.env
+      - docker/mysql/mysql.env
+
+    links:
+      - db:db
+      - redis:redis
+    depends_on:
+      - web
+      - redis
+volumes:
+  web-django:
+  db-data:
